@@ -125,6 +125,13 @@ struct CoreDataService : DatabaseServiceProtocol {
             let results = try viewContext.fetch(fetchRequest)
 
             if let existingTask = results.first {
+                
+                if let subtasks = existingTask.subtasks as? Set<TodoSubtask> {
+                    for subtask in subtasks {
+                        viewContext.delete(subtask)
+                    }
+                }
+                
                 viewContext.delete(existingTask)
                 try viewContext.save()
                 print("Task deleted successfully")
@@ -147,11 +154,11 @@ struct CoreDataService : DatabaseServiceProtocol {
                 todoSubtask.name = subtask.name
                 todoSubtask.isDone = subtask.isDone
                 todoSubtask.parent = task
-
+                print("\(todoSubtask.parent)")
                 task.addToSubtasks(todoSubtask)
 
                 try viewContext.save()
-                print("Successfully added subtask: \(todoSubtask.name ?? "")")
+                print("Successfully added subtask: \(todoSubtask.name ?? "") with \(todoSubtask.parent?.name ?? "nil") parent")
             }
         } catch {
             let nsError = error as NSError
@@ -202,7 +209,9 @@ struct CoreDataService : DatabaseServiceProtocol {
         do {
             let subtasks = try viewContext.fetch(fetchRequest)
             if let existingTask = subtasks.first {
+                existingTask.parent?.removeFromSubtasks(existingTask)
                 viewContext.delete(existingTask)
+                try viewContext.save()
                 print("Subtask \(existingTask.name ?? "No name") deleted successfully")
             } else {
                 print("Task not found")

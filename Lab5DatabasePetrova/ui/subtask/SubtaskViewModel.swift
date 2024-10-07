@@ -29,7 +29,7 @@ class SubtaskViewModel: ObservableObject {
     }
     
     func updateTask(name:String, isDone : Bool){
-        dataService.updateTask(name: name, isDone: isDone)
+        dataService.updateSubtask(name: name, isDone: isDone)
         fetchSubtasks()
     }
     
