@@ -5,4 +5,4 @@
 //  Created by Olesia Petrova on 07.10.2024.
 //
 
-let dataService : DatabaseServiceProtocol = CoreDataService.shared
+let dataService : DatabaseServiceProtocol = RealmDatabaseService()

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// todo optimize
 class SubtaskViewModel: ObservableObject {
     
     @Published var subtasks: [TodoSubtaskDTO] = []
