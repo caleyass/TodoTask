@@ -19,6 +19,9 @@ class SubtaskViewModel: ObservableObject {
     }
     
     func addTask(task: TodoSubtaskDTO){
+        if(subtasks.contains(where: { $0.name == task.name })){
+            return
+        }
         dataService.createSubtask(nameParentTask, subtask: task)
         fetchSubtasks()
     }

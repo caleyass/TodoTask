@@ -16,6 +16,9 @@ class TaskViewModel: ObservableObject {
     }
     
     func addTask(task: TodoTaskDTO){
+        if(tasks.contains(where: { $0.name == task.name })){
+            return
+        }
         dataService.createTask(task)
         fetchTasks()
     }
