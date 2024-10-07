@@ -18,27 +18,12 @@ extension TodoSubtask {
 
     @NSManaged public var name: String?
     @NSManaged public var isDone: Bool
-    @NSManaged public var parent: NSSet?
-
-}
-
-// MARK: Generated accessors for parent
-extension TodoSubtask {
-
-    @objc(addParentObject:)
-    @NSManaged public func addToParent(_ value: TodoTask)
-
-    @objc(removeParentObject:)
-    @NSManaged public func removeFromParent(_ value: TodoTask)
-
-    @objc(addParent:)
-    @NSManaged public func addToParent(_ values: NSSet)
-
-    @objc(removeParent:)
-    @NSManaged public func removeFromParent(_ values: NSSet)
+    @NSManaged public var parent: TodoTask?
 
 }
 
 extension TodoSubtask : Identifiable {
-
+    
+    
+    
 }

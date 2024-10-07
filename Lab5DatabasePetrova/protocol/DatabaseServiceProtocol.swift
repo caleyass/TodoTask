@@ -8,11 +8,11 @@
 protocol DatabaseServiceProtocol {
     func createTask(_ task: TodoTaskDTO)
     func fetchTasks() -> [TodoTaskDTO]
-    func updateTask(_ task: TodoTaskDTO)
-    func deleteTask(_ task: TodoTaskDTO)
+    func updateTask(name: String, isDone: Bool)
+    func deleteTask(name: String)
     
-    func createSubtask(_ taskID: Int, subtask: TodoSubtaskDTO)
-    func fetchSubtasks(for taskID: Int) -> [TodoSubtaskDTO]
-    func updateSubtask(_ subtask: TodoSubtaskDTO)
-    func deleteSubtask(_ subtask: TodoSubtaskDTO)
+    func createSubtask(_ taskName: String, subtask: TodoSubtaskDTO)
+    func fetchSubtasks(for taskName: String) -> [TodoSubtaskDTO]
+    func updateSubtask(name: String, isDone: Bool)
+    func deleteSubtask(name: String)
 }

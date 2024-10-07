@@ -11,5 +11,5 @@ import CoreData
 
 @objc(TodoSubtask)
 public class TodoSubtask: NSManagedObject {
-
+   
 }

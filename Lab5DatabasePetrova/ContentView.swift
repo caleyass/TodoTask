@@ -11,33 +11,38 @@ import CoreData
 struct ContentView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(sortDescriptors: []) var todoTasks: FetchedResults<TodoTask>
-
+    @ObservedObject var viewModel = TaskViewModel()
+    
+    @State private var showAddTaskAlert = false
+    @State private var newTaskName = ""
+    @State private var newTaskDueDate = Date()
+    
+    
     var body: some View {
         NavigationView {
             List {
-                ForEach(todoTasks) { item in
+                ForEach(viewModel.tasks, id: \.name) { item in
                     NavigationLink {
                         Text("\(item.name)")
                     } label: {
-                        Text("\(item.name ?? "no name")")
+                        HStack{
+                            Text("\(item.name ?? "no name")")
+                            Spacer()
+                            CheckboxToggle(
+                                isDone: item.isDone,
+                                updateValue: { isDone in  viewModel.updateTask(name: item.name, isDone: isDone)}
+                            )
+                        }.padding()
                     }
+                    
                 }
-                //.onDelete(perform: deleteItems)
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
                 ToolbarItem {
-                    
-                    NavigationLink{
-                        Text("Hi")
-                    } label: {
-                        Button(action: {}) {
-                            Label("Add Item", systemImage: "plus")
-                        }
+                    Button(action: {
+                        viewModel.addTask(task: TodoTaskDTO(name: "new task", isDone: false, dueDate: Date(), subtasks: []))
+                    }) {
+                        Label("Add Item", systemImage: "plus")
                     }
                 }
                 
@@ -45,16 +50,26 @@ struct ContentView: View {
             Text("Select an item")
         }
     }
-
-
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
+
+struct CheckboxToggle : View {
+    @State var isDone : Bool
+    let updateValue : (Bool) -> Void
+    
+    var body: some View{
+        Image(systemName: isDone ? "checkmark.square" : "square")
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(.black)
+            .onTapGesture {
+                isDone.toggle()
+                updateValue(isDone)
+            }
+    }
+}
+
+
 
 #Preview {
     ContentView().environment(\.managedObjectContext, CoreDataService.preview.container.viewContext)
