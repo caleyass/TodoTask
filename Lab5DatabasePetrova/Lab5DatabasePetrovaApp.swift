@@ -13,7 +13,7 @@ struct Lab5DatabasePetrovaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TaskView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

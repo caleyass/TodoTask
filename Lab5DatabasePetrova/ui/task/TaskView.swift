@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreData
 
-struct ContentView: View {
+struct TaskView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var viewModel = TaskViewModel()
@@ -22,11 +22,13 @@ struct ContentView: View {
             List {
                 ForEach(viewModel.tasks, id: \.name) { item in
                     NavigationLink {
-                        Text("\(item.name)")
+                        LazyView {
+                            SubtaskView(nameParentTask: item.name)
+                        }
                     } label: {
                         HStack{
                             VStack(alignment: .leading) {
-                                Text(item.name ?? "no name")
+                                Text(item.name)
                                 Text("Due: \(formattedDate(item.dueDate))")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
@@ -49,40 +51,12 @@ struct ContentView: View {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
-                
             }
         }
         .sheet(isPresented: $showAddTaskSheet) {
-            VStack {
-                Text("Add New Task")
-                    .font(.headline)
-                    .padding()
-                
-                TextField("Task Name", text: $newTaskName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-
-                DatePicker("Due Date", selection: $newTaskDueDate, displayedComponents: [.date])
-                    .padding()
-
-                HStack {
-                    Button("Cancel") {
-                        showAddTaskSheet = false
-                    }
-                    .padding()
-                    
-                    Spacer()
-
-                    Button("Add") {
-                        viewModel.addTask(task: TodoTaskDTO(name: newTaskName, isDone: false, dueDate: newTaskDueDate, subtasks: []))
-                        newTaskName = ""
-                        newTaskDueDate = Date()
-                        showAddTaskSheet = false
-                    }
-                    .padding()
-                }
-            }
-            .padding()
+            AddTaskSheet(addTask: { newTaskName, newTaskDueDate in
+                viewModel.addTask(task: TodoTaskDTO(name: newTaskName, isDone: false, dueDate: newTaskDueDate, subtasks: []))
+            }, showSheet: $showAddTaskSheet)
         }
     }
         
@@ -100,6 +74,49 @@ struct ContentView: View {
       return formatter.string(from: date)
   }
     
+}
+
+struct AddTaskSheet: View {
+    
+    let addTask: (String, Date) -> Void
+    
+    @Binding var showSheet: Bool
+    
+    @State private var newTaskName = ""
+    @State private var newTaskDueDate = Date()
+    
+    var body: some View {
+        VStack {
+            Text("Add New Task")
+                .font(.headline)
+                .padding()
+            
+            TextField("Task Name", text: $newTaskName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+
+            DatePicker("Due Date", selection: $newTaskDueDate, displayedComponents: [.date])
+                .padding()
+
+            HStack {
+                Button("Cancel") {
+                    showSheet = false
+                }
+                .padding()
+                
+                Spacer()
+
+                Button("Add") {
+                    addTask(newTaskName, newTaskDueDate)
+                    newTaskName = ""
+                    newTaskDueDate = Date()
+                    showSheet = false
+                }
+                .padding()
+            }
+        }
+        .padding()
+    }
 }
 
 
@@ -122,7 +139,7 @@ struct CheckboxToggle : View {
 
 
 #Preview {
-    ContentView().environment(\.managedObjectContext, CoreDataService.preview.container.viewContext)
+    TaskView().environment(\.managedObjectContext, CoreDataService.preview.container.viewContext)
 }
 
 
