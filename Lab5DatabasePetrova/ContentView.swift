@@ -13,10 +13,9 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var viewModel = TaskViewModel()
     
-    @State private var showAddTaskAlert = false
+    @State private var showAddTaskSheet = false
     @State private var newTaskName = ""
     @State private var newTaskDueDate = Date()
-    
     
     var body: some View {
         NavigationView {
@@ -26,7 +25,12 @@ struct ContentView: View {
                         Text("\(item.name)")
                     } label: {
                         HStack{
-                            Text("\(item.name ?? "no name")")
+                            VStack(alignment: .leading) {
+                                Text(item.name ?? "no name")
+                                Text("Due: \(formattedDate(item.dueDate))")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
                             Spacer()
                             CheckboxToggle(
                                 isDone: item.isDone,
@@ -34,22 +38,68 @@ struct ContentView: View {
                             )
                         }.padding()
                     }
-                    
                 }
+                .onDelete(perform: deleteTask)
             }
             .toolbar {
                 ToolbarItem {
                     Button(action: {
-                        viewModel.addTask(task: TodoTaskDTO(name: "new task", isDone: false, dueDate: Date(), subtasks: []))
+                        showAddTaskSheet = true
                     }) {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
                 
             }
-            Text("Select an item")
+        }
+        .sheet(isPresented: $showAddTaskSheet) {
+            VStack {
+                Text("Add New Task")
+                    .font(.headline)
+                    .padding()
+                
+                TextField("Task Name", text: $newTaskName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+
+                DatePicker("Due Date", selection: $newTaskDueDate, displayedComponents: [.date])
+                    .padding()
+
+                HStack {
+                    Button("Cancel") {
+                        showAddTaskSheet = false
+                    }
+                    .padding()
+                    
+                    Spacer()
+
+                    Button("Add") {
+                        viewModel.addTask(task: TodoTaskDTO(name: newTaskName, isDone: false, dueDate: newTaskDueDate, subtasks: []))
+                        newTaskName = ""
+                        newTaskDueDate = Date()
+                        showAddTaskSheet = false
+                    }
+                    .padding()
+                }
+            }
+            .padding()
         }
     }
+        
+    private func deleteTask(at offsets: IndexSet) {
+        for index in offsets {
+            let task = viewModel.tasks[index]
+            viewModel.deleteTask(name: task.name)
+        }
+    }
+    
+    private func formattedDate(_ date: Date?) -> String {
+      guard let date = date else { return "No due date" }
+      let formatter = DateFormatter()
+      formatter.dateStyle = .medium
+      return formatter.string(from: date)
+  }
+    
 }
 
 
