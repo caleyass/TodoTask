@@ -7,7 +7,7 @@
 import SwiftData
 
 @Model
-class TodoSubtaskSwift {
+class TodoSubtaskSwiftData {
     var name: String
     var isDone: Bool
 

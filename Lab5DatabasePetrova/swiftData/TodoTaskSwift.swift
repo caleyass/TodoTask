@@ -12,9 +12,9 @@ class TodoTaskSwiftData {
     var name: String
     var isDone: Bool
     var dueDate: Date
-    var subtasks: [TodoSubtask]
+    var subtasks: [TodoSubtaskSwiftData]
 
-    init(name: String, isDone: Bool, dueDate: Date, subtasks: [TodoSubtask] = []) {
+    init(name: String, isDone: Bool, dueDate: Date, subtasks: [TodoSubtaskSwiftData] = []) {
         self.name = name
         self.isDone = isDone
         self.dueDate = dueDate

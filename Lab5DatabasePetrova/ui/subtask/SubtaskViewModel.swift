@@ -7,39 +7,35 @@
 
 import SwiftUI
 
-// todo optimize
 class SubtaskViewModel: ObservableObject {
     
     @Published var subtasks: [TodoSubtaskDTO] = []
     
-    let nameParentTask : String
+    let nameParentTask: String
 
-    init(nameParentTask:String) {
+    init(nameParentTask: String) {
         self.nameParentTask = nameParentTask
         self.subtasks = dataService.fetchSubtasks(for: nameParentTask)
     }
     
-    func addTask(task: TodoSubtaskDTO){
-        if(subtasks.contains(where: { $0.name == task.name })){
+    func addTask(task: TodoSubtaskDTO) {
+        if subtasks.contains(where: { $0.name == task.name }) {
             return
         }
+        subtasks.append(task)
         dataService.createSubtask(nameParentTask, subtask: task)
-        fetchSubtasks()
     }
     
-    func deleteTask(name: String){
+    func deleteTask(name: String) {
+        subtasks.removeAll { $0.name == name }
         dataService.deleteSubtask(name: name)
-        fetchSubtasks()
     }
     
-    func updateTask(name:String, isDone : Bool){
+    func updateTask(name: String, isDone: Bool) {
+        if let index = subtasks.firstIndex(where: { $0.name == name }) {
+            subtasks[index].isDone = isDone
+        }
         dataService.updateSubtask(name: name, isDone: isDone)
-        fetchSubtasks()
     }
-    
-    func fetchSubtasks(){
-        self.subtasks = dataService.fetchSubtasks(for: nameParentTask)
-    }
-    
     
 }

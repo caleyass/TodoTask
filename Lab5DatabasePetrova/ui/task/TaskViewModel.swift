@@ -15,26 +15,24 @@ class TaskViewModel: ObservableObject {
         self.tasks = dataService.fetchTasks()
     }
     
-    func addTask(task: TodoTaskDTO){
-        if(tasks.contains(where: { $0.name == task.name })){
+    func addTask(task: TodoTaskDTO) {
+        if tasks.contains(where: { $0.name == task.name }) {
             return
         }
+        tasks.append(task)
         dataService.createTask(task)
-        fetchTasks()
     }
     
-    func deleteTask(name: String){
+    func deleteTask(name: String) {
+        tasks.removeAll { $0.name == name }
         dataService.deleteTask(name: name)
-        fetchTasks()
     }
     
-    func updateTask(name:String, isDone : Bool){
+    func updateTask(name: String, isDone: Bool) {
+        if let index = tasks.firstIndex(where: { $0.name == name }) {
+            tasks[index].isDone = isDone
+        }
         dataService.updateTask(name: name, isDone: isDone)
-        fetchTasks()
     }
-    
-    func fetchTasks(){
-        self.tasks = dataService.fetchTasks()
-    }
-    
 }
+
