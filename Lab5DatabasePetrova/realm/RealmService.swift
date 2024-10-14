@@ -44,8 +44,8 @@ class RealmDatabaseService: DatabaseServiceProtocol {
         
         if let existingTask = task {
             try! realm.write {
-                realm.delete(existingTask.subtasks) // Delete associated subtasks
-                realm.delete(existingTask) // Delete the task itself
+                realm.delete(existingTask.subtasks)
+                realm.delete(existingTask)
             }
         }
     }
@@ -84,7 +84,7 @@ class RealmDatabaseService: DatabaseServiceProtocol {
         
         if let existingSubtask = subtask {
             try! realm.write {
-                realm.delete(existingSubtask) // Delete the subtask
+                realm.delete(existingSubtask)
             }
         }
     }
